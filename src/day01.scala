@@ -30,5 +30,18 @@ def part1(input: String): String =
 end part1
 
 def part2(input: String): String =
-  ""
+  val lists = input.trim
+    .split("\n")
+    .map { line =>
+      line.trim
+        .split("\\s+")
+        .map(_.toInt)
+        .toList
+    }
+    .toList
+    .transpose
+
+  val counts = lists(1).groupBy(identity).mapValues(_.size)
+
+  lists(0).map { n => counts.getOrElse(n, 0) * n }.sum.toString
 end part2

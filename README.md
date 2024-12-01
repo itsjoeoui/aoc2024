@@ -4,7 +4,7 @@ My Advent of Code 2024 solutions in Scala!
 
 | Day | Part 1 | Part 2 |
 | --- | ------ | ------ |
-| 01  | ✅     |        |
+| 01  | ✅     | ✅     |
 | 02  |        |        |
 | 03  |        |        |
 | 04  |        |        |

@@ -71,9 +71,83 @@ def part1(input: String): String =
     case None => Set()
 
   result.size.toString()
-
 end part1
 
 def part2(input: String): String =
-  ""
+  val grid = parseInput(input)
+
+  def outOfBound(coord: Coord): Boolean =
+    coord.x < 0 || coord.x >= grid(
+      0
+    ).length || coord.y < 0 || coord.y >= grid.length
+
+  @tailrec
+  def traverse(
+      coord: Coord,
+      visited: Set[Coord],
+      direction: Direction
+  ): Set[Coord] =
+    val newVisited = visited + coord
+
+    val nextCoord = nextPosition(coord, direction)
+
+    if (outOfBound(nextCoord)) {
+      newVisited
+    } else if (grid(nextCoord.y)(nextCoord.x) == "#".head) {
+      val newDirection = rotateRight(direction)
+      traverse(coord, newVisited, newDirection)
+    } else {
+      traverse(nextCoord, newVisited, direction)
+    }
+
+  @tailrec
+  def cycleDetect(
+      coord: Coord,
+      visited: Set[String],
+      direction: Direction,
+      extra: Coord
+  ): Boolean =
+    val nextCoord = nextPosition(coord, direction)
+
+    if (visited.contains(s"${coord.toString()}${direction.toString()}")) {
+      true
+    } else if (outOfBound(nextCoord)) {
+      false
+    } else if (
+      grid(nextCoord.y)(
+        nextCoord.x
+      ) == "#".head || (nextCoord.x == extra.x && nextCoord.y == extra.y)
+    ) {
+      val newDirection = rotateRight(direction)
+      cycleDetect(coord, visited, newDirection, extra)
+    } else {
+      cycleDetect(
+        nextCoord,
+        visited + s"${coord.toString()}${direction.toString}",
+        direction,
+        extra
+      )
+    }
+
+  val startOption = grid.zipWithIndex.collectFirst {
+    case (row, rowIndex) if row.contains('^') =>
+      Coord(row.indexWhere(_ == "^".head), rowIndex)
+  }
+
+  val start = startOption match
+    case Some(coord) => coord
+    case _           => throw new Exception("No starting point found")
+
+  val possibilities = traverse(start, Set(), Direction.Up) - start
+
+  possibilities
+    .count { coord =>
+      cycleDetect(
+        start,
+        Set(),
+        Direction.Up,
+        coord
+      )
+    }
+    .toString()
 end part2

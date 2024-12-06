@@ -51,15 +51,17 @@ def part1(input: String): String =
 
     val nextCoord = nextPosition(coord, direction)
 
-    if outOfBound(nextCoord)
-    then newVisited
-    else if grid(nextCoord.y)(nextCoord.x) == "#".head then
+    if (outOfBound(nextCoord)) {
+      newVisited
+    } else if (grid(nextCoord.y)(nextCoord.x) == "#".head) {
       val newDirection = rotateRight(direction)
       traverse(coord, newVisited, newDirection)
-    else traverse(nextCoord, newVisited, direction)
+    } else {
+      traverse(nextCoord, newVisited, direction)
+    }
 
   val start = grid.zipWithIndex.collectFirst {
-    case (row, rowIndex) if row.indexWhere(_ == "^".head) != -1 =>
+    case (row, rowIndex) if row.contains('^') =>
       Coord(row.indexWhere(_ == "^".head), rowIndex)
   }
 

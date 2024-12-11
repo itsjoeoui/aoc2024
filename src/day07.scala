@@ -28,24 +28,47 @@ def parseInput(input: String): List[Problem] =
     }
   }.toList
 
-def isValid(target: Long, nums: List[Long], idx: Int, temp: Long): Boolean =
+enum Operation:
+  case Add, Multiply, Concat
+
+def isValid(
+    operations: List[Operation],
+    target: Long,
+    nums: List[Long],
+    idx: Int,
+    temp: Long
+): Boolean =
   if (temp > target && nums.drop(idx).forall(_ > 0)) return false
 
   if (idx == nums.length) return temp == target
 
-  isValid(target, nums, idx + 1, temp + nums(idx)) ||
-  isValid(target, nums, idx + 1, temp * nums(idx))
+  return operations.exists {
+    case Operation.Add =>
+      isValid(operations, target, nums, idx + 1, temp + nums(idx))
+    case Operation.Multiply =>
+      isValid(operations, target, nums, idx + 1, temp * nums(idx))
+    case Operation.Concat =>
+      isValid(operations, target, nums, idx + 1, s"${temp}${nums(idx)}".toLong)
+  }
 end isValid
 
 def part1(input: String): String =
   val problems = parseInput(input)
+
+  val operations = List(Operation.Add, Operation.Multiply)
 
   problems
     .foldLeft(0L) { (acc, problem) =>
       acc + (if (
                problem.numbers match {
                  case first :: rest =>
-                   isValid(problem.target, problem.numbers, 1, first)
+                   isValid(
+                     operations,
+                     problem.target,
+                     problem.numbers,
+                     1,
+                     first
+                   )
                  case _ => false
                }
              ) problem.target
@@ -55,5 +78,26 @@ def part1(input: String): String =
 end part1
 
 def part2(input: String): String =
-  ""
+  val problems = parseInput(input)
+
+  val operations = List(Operation.Add, Operation.Multiply, Operation.Concat)
+
+  problems
+    .foldLeft(0L) { (acc, problem) =>
+      acc + (if (
+               problem.numbers match {
+                 case first :: rest =>
+                   isValid(
+                     operations,
+                     problem.target,
+                     problem.numbers,
+                     1,
+                     first
+                   )
+                 case _ => false
+               }
+             ) problem.target
+             else 0)
+    }
+    .toString
 end part2

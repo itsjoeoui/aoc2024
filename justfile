@@ -1,8 +1,8 @@
 p1 day:
-  @time scala-cli . -M day{{ day }}.part1
+  @time scala-cli . -M day{{ day }}.part1 -deprecation
 
 p2 day:
-  @time scala-cli . -M day{{ day }}.part2
+  @time scala-cli . -M day{{ day }}.part2 -deprecation
 
 run day:
   @echo "🎄 Running Day {{day}} 🎄\n"

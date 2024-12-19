@@ -41,7 +41,7 @@ def part2(input: String): String =
     .toList
     .transpose
 
-  val counts = lists(1).groupBy(identity).mapValues(_.size)
+  val counts = lists(1).groupBy(identity).view.mapValues(_.size)
 
   lists(0).map { n => counts.getOrElse(n, 0) * n }.sum.toString
 end part2

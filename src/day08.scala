@@ -80,7 +80,6 @@ def part2(input: String): String =
         .combinations(2)
         .flatMap { case Seq(a, b) =>
           getAntinodes(a, b, problem.grid(0).length, problem.grid.length)
-
         }
     }
     .toSet

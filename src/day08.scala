@@ -2,6 +2,7 @@ package day08
 
 import locations.Directory.currentDir
 import inputs.Input.loadFileSync
+import helpers.Coord
 
 @main def part1: Unit =
   println(s"The solution is ${part1(loadInput())}")
@@ -10,8 +11,6 @@ import inputs.Input.loadFileSync
   println(s"The solution is ${part2(loadInput())}")
 
 def loadInput(): String = loadFileSync(s"$currentDir/../input/day08")
-
-case class Coord(x: Int, y: Int)
 
 case class Problem(grid: Seq[Seq[Char]], antennas: Map[Char, Seq[Coord]])
 

@@ -3,6 +3,7 @@ package day06
 import locations.Directory.currentDir
 import inputs.Input.loadFileSync
 import scala.annotation.tailrec
+import helpers.{Coord, Direction}
 
 @main def part1: Unit =
   println(s"The solution is ${part1(loadInput())}")
@@ -15,15 +16,10 @@ def loadInput(): String = loadFileSync(s"$currentDir/../input/day06")
 def parseInput(input: String): List[List[Char]] =
   input.split("\n").map(_.toList).toList
 
-enum Direction:
-  case Up, Right, Down, Left
-
 val directions =
   List(Direction.Up, Direction.Right, Direction.Down, Direction.Left)
 
 class RobotPathTracker(grid: List[List[Char]]) {
-  case class Coord(x: Int, y: Int)
-
   def outOfBounds(coord: Coord): Boolean =
     coord.x < 0 || coord.x >= grid(
       0

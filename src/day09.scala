@@ -48,9 +48,66 @@ def part1(input: String): String =
     .toList
 
   compact.andThen(checksum)(system).toString
-
 end part1
 
 def part2(input: String): String =
-  ""
+  enum Block(val size: Int):
+    case File(s: Int, id: Int) extends Block(s)
+    case Empty(s: Int) extends Block(s)
+    def getBlockId = this match
+      case File(_, id) => Some(id)
+      case Empty(_)    => None
+    def canInsert(block: Block) = this match
+      case Empty(size) => size >= block.size
+      case _           => false
+
+  extension (empty: Block.Empty)
+    def insert(b: Block): Seq[Block] =
+      if b.size < empty.size then Seq(b, Block.Empty(empty.size - b.size))
+      else Seq(b)
+
+  type System = Seq[Block]
+  extension (system: System)
+    def checksum: Long = system
+      .flatMap(b => Seq.fill(b.size)(b.getBlockId.getOrElse(0)))
+      .zipWithIndex
+      .map(_.toLong * _)
+      .sum
+
+  val system = input
+    .map(_.asDigit)
+    .grouped(2)
+    .zipWithIndex
+    .flatMap {
+      case (Seq(file, free), id) =>
+        Seq(Block.File(file, id), Block.Empty(free))
+      case (Seq(file), id) =>
+        Seq(Block.File(file, id))
+    }
+    .toList
+
+  def compact(system: System): System =
+    @tailrec
+    def rec(system: System, acc: System): System =
+      system.lastOption match
+        case None                             => acc
+        case Some(last @ Block.Empty(_))      => rec(system.init, last +: acc)
+        case Some(last @ Block.File(size, _)) =>
+          // Find first block which can fit the file block
+          val fitter = system.zipWithIndex
+            .find((block, _) => block.canInsert(last))
+
+          fitter match
+            case None =>
+              // If it doesn't fit anywhere, don't move it
+              rec(system.init, last +: acc)
+            case Some(free @ Block.Empty(_), id) =>
+              // If it fits somewhere, insert inside this free block
+              val newDisk =
+                system.take(id) ++ free.insert(last) ++ system.drop(id + 1).init
+              rec(newDisk, Block.Empty(last.size) +: acc)
+            case _ => throw new MatchError("Unexpected block type")
+    rec(system, Seq.empty)
+
+  compact(system).checksum.toString
 end part2
